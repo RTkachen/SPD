@@ -27,10 +27,15 @@ int main(int argc, char* argv[]) {
     // Wyswietlamy wynik
     problem.displayResults();
 
-    problem.sortByQ();
+    //problem.sortByQ();
+    //problem.displayResults();
+    //problem.sortByR();
+    //problem.displayResults();
+    problem.schrage();
     problem.displayResults();
-    problem.sortByR();
+    problem.schragePmtn();
     problem.displayResults();
-
+    problem.customHeuristic();
+    problem.displayResults();
     return 0;
 }

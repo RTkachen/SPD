@@ -19,6 +19,9 @@ public:
 Problem(const std::vector<int> inst, const int& n) : instantion(std::move(inst)), n(n) {}
     void sortByQ();
     void sortByR();
+    void schrage();
+    void schragePmtn();
+    void customHeuristic();
     // Funkcja do generowania wszystkich permutacji
     void generatePermutations();
     void displayResults();

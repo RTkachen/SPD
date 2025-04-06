@@ -60,6 +60,125 @@ void Problem::displayResults() {
   std::cout << std::endl;
 }
 
+void Problem::customHeuristic() {
+    std::vector<int> N(n);
+    std::iota(N.begin(), N.end(), 0);
+
+    std::sort(N.begin(), N.end(), [&](int a, int b) {
+        return instantion[a * 3] < instantion[b * 3];  // r rosnąco
+    });
+
+    bestPermutation.clear();
+
+    while (!N.empty()) {
+        int selectedIdx = 0;
+        int r0 = instantion[N[0] * 3];
+        int q0 = instantion[N[0] * 3 + 2];
+        int maxImpact = q0;
+
+        for (size_t i = 1; i < N.size(); ++i) {
+            int ri = instantion[N[i] * 3];
+            int qi = instantion[N[i] * 3 + 2];
+            int impact = qi + (ri - r0);  // szacowany wpływ opóźnienia
+
+            if (impact > maxImpact) {
+                maxImpact = impact;
+                selectedIdx = i;
+            }
+        }
+
+        bestPermutation.push_back(N[selectedIdx]);
+        N.erase(N.begin() + selectedIdx);
+    }
+
+    minCq = countCq(bestPermutation);
+}
+
+
+void Problem::schrage() {
+    std::vector<int> N(n);  // indeksy zadań
+    std::iota(N.begin(), N.end(), 0);  // [0, 1, 2, ..., n-1]
+
+    // Sortowanie po r rosnąco
+    std::sort(N.begin(), N.end(), [&](int a, int b) {
+        return instantion[a * 3] < instantion[b * 3];  // r(a) < r(b)
+    });
+
+    // kolejka gotowych zadań, sortowana po największym q
+    auto cmp_q = [&](int a, int b) {
+        return instantion[a * 3 + 2] < instantion[b * 3 + 2];
+    };
+    std::priority_queue<int, std::vector<int>, decltype(cmp_q)> G(cmp_q);
+
+    bestPermutation.clear();  // finalna kolejność wykonywania zadań
+
+    int t = 0;      // aktualny czas
+    size_t idx = 0; // wskaźnik na N
+
+    while (!G.empty() || idx < N.size()) {
+        while (idx < N.size() && instantion[N[idx] * 3] <= t) {
+            G.push(N[idx]);
+            ++idx;
+        }
+
+        if (G.empty()) {
+            t = instantion[N[idx] * 3];  // przeskok do najbliższego r(i)
+        } else {
+            int e = G.top(); G.pop();
+            bestPermutation.push_back(e);
+            t += instantion[e * 3 + 1];  // dodaj p(i)
+        }
+    }
+
+    minCq = countCq(bestPermutation);
+}
+
+void Problem::schragePmtn() {
+    std::vector<int> N(n);
+    std::iota(N.begin(), N.end(), 0);  // indeksy zadań
+
+    std::sort(N.begin(), N.end(), [&](int a, int b) {
+        return instantion[a * 3] < instantion[b * 3];  // r(a) < r(b)
+    });
+
+    auto cmp_q = [&](int a, int b) {
+        return instantion[a * 3 + 2] < instantion[b * 3 + 2];
+    };
+    std::priority_queue<int, std::vector<int>, decltype(cmp_q)> G(cmp_q);
+
+    int t = 0;
+    int Cmax = 0;
+    int l = -1;  // aktualnie wykonywane zadanie
+    size_t idx = 0;
+
+    bestPermutation.clear(); // <-- dodane
+
+    while (!G.empty() || idx < N.size()) {
+        while (idx < N.size() && instantion[N[idx] * 3] <= t) {
+            int j = N[idx];
+
+            G.push(j);
+            if (l != -1 && instantion[j * 3 + 2] > instantion[l * 3 + 2]) {
+                instantion[l * 3 + 1] = t - instantion[j * 3];  // skracamy p(l)
+                t = instantion[j * 3];
+                G.push(l);
+            }
+
+            ++idx;
+        }
+
+        if (G.empty()) {
+            t = instantion[N[idx] * 3];
+        } else {
+            l = G.top(); G.pop();
+            bestPermutation.push_back(l); // <-- dodane
+            t += instantion[l * 3 + 1];
+            Cmax = std::max(Cmax, t + instantion[l * 3 + 2]);
+        }
+    }
+
+    minCq = Cmax;
+}
 
 int Problem::countCq(const std::vector<int>& perm) {
     std::vector<int> C(n);  // Wektor przechowujący wartości C dla operacji
