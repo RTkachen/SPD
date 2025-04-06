@@ -12,12 +12,18 @@ int main(int argc, char* argv[]) {
 
     // Tworzymy obiekt Zadanie i wczytujemy dane z pliku
     Zadanie zadanie(filename);
-
+    zadanie.displayFile();
     // Tworzymy obiekt Problem z danymi z Zadania
-    Problem problem(zadanie.getInstantion());
-
+    Problem problem(zadanie.getInstantion(), zadanie.getN());
+    
+    auto start = std::chrono::high_resolution_clock::now();
     // Przeglad zupelny
     problem.generatePermutations();
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+    std::cout << "Czas wykonania: " << std::fixed << std::setprecision(3) << duration.count() << " s" << std::endl;
+
     // Wyswietlamy wynik
     problem.displayResults();
 

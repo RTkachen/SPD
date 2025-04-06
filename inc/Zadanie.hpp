@@ -10,11 +10,7 @@
 class Zadanie {
 private:
     int n;  // Numer operacji
-    int p;  // Czas wykonywania operacji
-    int r;  // Czas dostępności operacji
-    int q;  // Czas stygnięcia operacji
     std::vector<int> instantion;  // Wektor do przechowywania danych instancji
-
     // Funkcja do wczytywania danych z pliku
     void readFromFile(const std::string& filename);
 
@@ -24,12 +20,9 @@ public:
 
     // Funkcja do zwrócenia wczytanych danych
     const std::vector<int>& getInstantion() const;
-
+    void displayFile();
     // Funkcje dostępowe (gettery)
     int getN() const;
-    int getP() const;
-    int getR() const;
-    int getQ() const;
 };
 
 #endif // ZADANIE_HPP
