@@ -29,11 +29,12 @@ int main(int argc, char* argv[]) {
     // Tworzymy obiekt Problem z danymi z Zadania
     std::cout<<zadanie.getN()<<std::endl;
     Problem problem(zadanie.getInstantion(), zadanie.getN());
-    
+    if(zadanie.getN()<=12){
     measureExecutionTime("Przegląd zupełny", [&]() {
         problem.generatePermutations();
     });
     problem.displayResults();
+    }
 
     measureExecutionTime("Sortowanie po q", [&]() {
         problem.sortByQ();
